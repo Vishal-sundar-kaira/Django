@@ -1,10 +1,9 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    # path('add_income/', views.add_income, name='add_income'),
-    # path('add_expense/', views.add_expense, name='add_expense'),
-    # path('dashboard/', views.dashboard, name='dashboard'),
-    # path('report/', views.report, name='report'),
-    # # Add additional URL patterns for your views as needed
+    path('', views.home, name='home'),  # Root URL
+    path('accounts/', include('django.contrib.auth.urls')),  # Auth URLs
+    path('signup/', views.signup, name='signup'),
+    # Add other URLs for your app here
 ]
