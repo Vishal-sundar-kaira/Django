@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import IncomeSource, ExpenseCategory, Transaction
 
-# Register your models here.
+admin.site.register(IncomeSource)
+admin.site.register(ExpenseCategory)
+admin.site.register(Transaction)
