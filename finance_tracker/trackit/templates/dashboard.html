@@ -1,10 +1,12 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
 <body>
     <div class="container">
@@ -35,15 +37,15 @@
                 <div class="overview-cards">
                     <div class="card total-income">
                         <h3>Total Income</h3>
-                        <div class="income-value">$132,142</div>
+                        <div class="income-value">RS {{total_income}}</div>
                     </div>
                     <div class="card total-spent">
                         <h3>Total Spent</h3>
-                        <div class="spent-value">$30,671</div>
+                        <div class="spent-value">RS {{total_expenses}}</div>
                     </div>
                     <div class="card cards-balance">
                         <h3>Savings</h3>
-                        <div class="card-balance">$2301</div>
+                        <div class="card-balance">RS {{savings}}</div>
                     </div>
                 </div>
                 <div class="income-vs-spent">
