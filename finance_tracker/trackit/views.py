@@ -1,113 +1,97 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
-from .forms import SignUpForm
-from django.db.models import Sum
-from django.contrib.auth.decorators import login_required
+from rest_framework import generics, permissions
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.contrib.auth import login
+from django.contrib.auth.models import User
+from .serializer import SignUpSerializer, IncomeSourceSerializer, ExpenseCategorySerializer, TransactionSerializer
 from .models import IncomeSource, ExpenseCategory, Transaction
-from .forms import IncomeSourceForm, ExpenseCategoryForm, TransactionForm
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Sum
 from django.utils import timezone
-@login_required
-def home(request):
-    return render(request, 'home.html')
-def signup(request):
-    if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('/')
-    else:
-        form = SignUpForm()
-    return render(request, 'registration/signup.html', {'form': form})
+from datetime import timedelta
 
-@login_required
-def dashboard(request):
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def dashboard_data(request):
     user = request.user
     total_income = IncomeSource.objects.filter(user=user).aggregate(total=Sum('amount'))['total'] or 0
     total_expenses = ExpenseCategory.objects.filter(user=user).aggregate(total=Sum('amount'))['total'] or 0
     savings = total_income - total_expenses
-    context = {
+
+    return Response({
         'total_income': total_income,
         'total_expenses': total_expenses,
         'savings': savings
+    })
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def chart_data(request):
+    user = request.user
+    today = timezone.now().date()
+    start_of_week = today - timedelta(days=today.weekday())
+    start_of_month = today.replace(day=1)
+
+    daily_income = IncomeSource.objects.filter(user=user, date=today).aggregate(total=Sum('amount'))['total'] or 0
+    weekly_income = IncomeSource.objects.filter(user=user, date__gte=start_of_week).aggregate(total=Sum('amount'))['total'] or 0
+    monthly_income = IncomeSource.objects.filter(user=user, date__gte=start_of_month).aggregate(total=Sum('amount'))['total'] or 0
+
+    daily_expenses = ExpenseCategory.objects.filter(user=user, date=today).aggregate(total=Sum('amount'))['total'] or 0
+    weekly_expenses = ExpenseCategory.objects.filter(user=user, date__gte=start_of_week).aggregate(total=Sum('amount'))['total'] or 0
+    monthly_expenses = ExpenseCategory.objects.filter(user=user, date__gte=start_of_month).aggregate(total=Sum('amount'))['total'] or 0
+
+    data = {
+        "daily_income": daily_income,
+        "weekly_income": weekly_income,
+        "monthly_income": monthly_income,
+        "daily_expenses": daily_expenses,
+        "weekly_expenses": weekly_expenses,
+        "monthly_expenses": monthly_expenses,
     }
-    return render(request, 'dashboard.html', context)
 
-def add_income(request):
-    if request.method == 'POST':
-        form = IncomeSourceForm(request.POST)
-        if form.is_valid():
-            income = form.save(commit=False)
-            income.user = request.user
-            income.save()
-            return redirect('home')
-    else:
-        form = IncomeSourceForm()
-    return render(request, 'add_income.html', {'form': form})
+    return Response(data)
 
-def add_expense_category(request):
-    if request.method == 'POST':
-        form = ExpenseCategoryForm(request.POST)
-        if form.is_valid():
-            category = form.save(commit=False)
-            category.user = request.user
-            category.save()
-            return redirect('home')
-    else:
-        form = ExpenseCategoryForm()
-    return render(request, 'add_expense_category.html', {'form': form})
+class SignUpView(generics.CreateAPIView):
+    serializer_class = SignUpSerializer
 
-def add_transaction(request):
-    if request.method == 'POST':
-        form = TransactionForm(request.POST)
-        if form.is_valid():
-            transaction = form.save(commit=False)
-            transaction.user = request.user
-            transaction.save()
-            return redirect('home')
-    else:
-        form = TransactionForm()
-    return render(request, 'add_transaction.html', {'form': form})
+class IncomeSourceCreateView(generics.CreateAPIView):
+    serializer_class = IncomeSourceSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-class TransactionListView(LoginRequiredMixin, ListView):
-    model = Transaction
-    template_name = 'transaction_list.html'
-    context_object_name = 'transactions'
-    
-    def get_queryset(self):
-        queryset = Transaction.objects.filter(user=self.request.user)
-        
-        # Print the queryset for debugging
-        print("User:", self.request.user, "- Queryset:", queryset)
-        
-        return queryset
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
-class TransactionCreateView(LoginRequiredMixin, CreateView):
-    model = Transaction
-    form_class = TransactionForm
-    template_name = 'transaction_form.html'
-    success_url = reverse_lazy('transaction_list')
+class ExpenseCategoryCreateView(generics.CreateAPIView):
+    serializer_class = ExpenseCategorySerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super().form_valid(form)
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
-class TransactionUpdateView(LoginRequiredMixin, UpdateView):
-    model = Transaction
-    form_class = TransactionForm
-    template_name = 'transaction_form.html'
-    success_url = reverse_lazy('transaction_list')
+class TransactionCreateView(generics.CreateAPIView):
+    serializer_class = TransactionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class TransactionListView(generics.ListAPIView):
+    serializer_class = TransactionSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return Transaction.objects.filter(user=self.request.user)
 
-class TransactionDeleteView(LoginRequiredMixin, DeleteView):
-    model = Transaction
-    template_name = 'transaction_confirm_delete.html'
-    success_url = reverse_lazy('transaction_list')
+class TransactionUpdateView(generics.UpdateAPIView):
+    serializer_class = TransactionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Transaction.objects.filter(user=self.request.user)
+
+class TransactionDeleteView(generics.DestroyAPIView):
+    serializer_class = TransactionSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return Transaction.objects.filter(user=self.request.user)
