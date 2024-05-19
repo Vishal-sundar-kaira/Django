@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from .forms import SignUpForm
+from django.db.models import Sum
 from django.contrib.auth.decorators import login_required
 from .models import IncomeSource, ExpenseCategory, Transaction
 from .forms import IncomeSourceForm, ExpenseCategoryForm, TransactionForm
@@ -21,6 +22,19 @@ def signup(request):
     else:
         form = SignUpForm()
     return render(request, 'registration/signup.html', {'form': form})
+
+@login_required
+def dashboard(request):
+    user = request.user
+    total_income = IncomeSource.objects.filter(user=user).aggregate(total=Sum('amount'))['total'] or 0
+    total_expenses = ExpenseCategory.objects.filter(user=user).aggregate(total=Sum('amount'))['total'] or 0
+    savings = total_income - total_expenses
+    context = {
+        'total_income': total_income,
+        'total_expenses': total_expenses,
+        'savings': savings
+    }
+    return render(request, 'dashboard.html', context)
 
 def add_income(request):
     if request.method == 'POST':
