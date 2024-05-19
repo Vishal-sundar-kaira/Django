@@ -2,12 +2,41 @@
 <html>
 <head>
     <title>Add Transaction</title>
+    <script>
+        async function addTransaction(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            const response = await fetch('/api/transaction/add/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert('Transaction added successfully');
+                window.location.href = '/transactions/';
+            } else {
+                alert('Error adding transaction');
+            }
+        }
+    </script>
 </head>
 <body>
     <h2>Add Transaction</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
+    <form id="addTransactionForm" onsubmit="addTransaction(event)">
+        <label for="category">Category:</label>
+        <input type="text" name="category" required><br>
+        <label for="amount">Amount:</label>
+        <input type="number" name="amount" required><br>
+        <label for="description">Description:</label>
+        <textarea name="description"></textarea><br>
+        <label for="date">Date:</label>
+        <input type="date" name="date" required><br>
         <button type="submit">Save</button>
     </form>
 </body>

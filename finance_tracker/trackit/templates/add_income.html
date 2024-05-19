@@ -2,12 +2,41 @@
 <html>
 <head>
     <title>Add Income</title>
+    <script>
+        async function addIncome(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            const response = await fetch('/api/add_income/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert('Income added successfully');
+                window.location.href = '/';
+            } else {
+                alert('Error adding income');
+            }
+        }
+    </script>
 </head>
 <body>
     <h2>Add Income</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
+    <form id="addIncomeForm" onsubmit="addIncome(event)">
+        <label for="name">Name:</label>
+        <input type="text" name="name" required><br>
+        <label for="amount">Amount:</label>
+        <input type="number" name="amount" required><br>
+        <label for="description">Description:</label>
+        <textarea name="description"></textarea><br>
+        <label for="date">Date:</label>
+        <input type="date" name="date" required><br>
         <button type="submit">Save</button>
     </form>
 </body>

@@ -1,12 +1,29 @@
-{% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        async function fetchDashboardData() {
+            const response = await fetch('/api/dashboard/', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                document.querySelector('.income-value').textContent = `RS ${data.total_income}`;
+                document.querySelector('.spent-value').textContent = `RS ${data.total_expenses}`;
+                document.querySelector('.card-balance').textContent = `RS ${data.savings}`;
+            } else {
+                console.error('Failed to fetch dashboard data');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchDashboardData);
+    </script>
 </head>
 <body>
     <div class="container">
@@ -37,15 +54,15 @@
                 <div class="overview-cards">
                     <div class="card total-income">
                         <h3>Total Income</h3>
-                        <div class="income-value">RS {{total_income}}</div>
+                        <div class="income-value">Loading...</div>
                     </div>
                     <div class="card total-spent">
                         <h3>Total Spent</h3>
-                        <div class="spent-value">RS {{total_expenses}}</div>
+                        <div class="spent-value">Loading...</div>
                     </div>
                     <div class="card cards-balance">
                         <h3>Savings</h3>
-                        <div class="card-balance">RS {{savings}}</div>
+                        <div class="card-balance">Loading...</div>
                     </div>
                 </div>
                 <div class="income-vs-spent">

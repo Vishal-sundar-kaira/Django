@@ -1,21 +1,40 @@
-{% extends 'home.html' %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Transactions</title>
+    <script>
+        async function loadTransactions() {
+            const response = await fetch('/api/transactions/', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                }
+            });
+            const transactions = await response.json();
 
-{% block content %}
-  <h2>Transactions</h2>
-  <a href="{% url 'transaction_add' %}">Add Transaction</a>
-  
-  {% if transactions %}
-    <ul>
-      {% for transaction in transactions %}
-        <li>
-          {{ transaction.date }} - {{ transaction.category }} - {{ transaction.amount }} - {{ transaction.description }}
-          <a href="{% url 'transaction_edit' transaction.pk %}">Edit</a>
-          <a href="{% url 'transaction_delete' transaction.pk %}">Delete</a>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No transactions available.</p>
-  {% endif %}
-  
-{% endblock %}
+            const transactionsList = document.getElementById('transactionsList');
+            transactionsList.innerHTML = '';
+
+            if (transactions.length > 0) {
+                transactions.forEach(transaction => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        ${transaction.date} - ${transaction.category} - ${transaction.amount} - ${transaction.description}
+                        <a href="/transaction/${transaction.id}/edit/">Edit</a>
+                        <a href="/transaction/${transaction.id}/delete/">Delete</a>
+                    `;
+                    transactionsList.appendChild(li);
+                });
+            } else {
+                transactionsList.innerHTML = '<p>No transactions available.</p>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadTransactions);
+    </script>
+</head>
+<body>
+    <h2>Transactions</h2>
+    <a href="/transaction/add/">Add Transaction</a>
+    <ul id="transactionsList"></ul>
+</body>
+</html>

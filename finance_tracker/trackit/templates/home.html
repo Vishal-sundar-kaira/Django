@@ -5,15 +5,14 @@
 </head>
 <body>
     <h1>Welcome to Finance Tracker</h1>
-    <a href="{% url 'login' %}">Login</a>
-    <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
+    <a href="/login/">Login</a>
+    <form method="post" action="/logout/">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
         <button type="submit">Logout</button>
     </form>
-    <a href="{% url 'signup' %}">signup</a>
-    <a href="{% url 'add_income' %}"> Add Income</a>
-    <a href="{% url 'add_expense_category' %}">Add Expense Category</a>
-    {% block content %}{% endblock %}
-    <!-- <p><a href="{% url 'transaction_list' %}">View Transactions</a></p> -->
+    <a href="/signup/">Sign Up</a>
+    <a href="/add_income/">Add Income</a>
+    <a href="/add_expense_category/">Add Expense Category</a>
+    <a href="/transactions/">View Transactions</a>
 </body>
 </html>

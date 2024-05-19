@@ -4,12 +4,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import login
 from django.contrib.auth.models import User
-from .serializer import SignUpSerializer, IncomeSourceSerializer, ExpenseCategorySerializer, TransactionSerializer
+from .serializer import SignUpSerializer, IncomeSourceSerializer, ExpenseCategorySerializer, TransactionSerializer,UserSerializer
 from .models import IncomeSource, ExpenseCategory, Transaction
 from django.db.models import Sum
 from django.utils import timezone
 from datetime import timedelta
-
+from rest_framework.views import APIView
+from django.contrib.auth.models import User
+from rest_framework.permissions import AllowAny
+from rest_framework import status
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 def dashboard_data(request):
@@ -51,8 +54,15 @@ def chart_data(request):
 
     return Response(data)
 
-class SignUpView(generics.CreateAPIView):
-    serializer_class = SignUpSerializer
+class SignUpView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class IncomeSourceCreateView(generics.CreateAPIView):
     serializer_class = IncomeSourceSerializer
