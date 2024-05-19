@@ -13,12 +13,18 @@ class SignUpForm(UserCreationForm):
 class IncomeSourceForm(forms.ModelForm):
     class Meta:
         model = IncomeSource
-        fields = ['name', 'amount', 'date']
+        fields = ['name', 'amount', 'description', 'date']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+        }
 
 class ExpenseCategoryForm(forms.ModelForm):
     class Meta:
         model = ExpenseCategory
-        fields = ['name']
+        fields = ['name', 'amount', 'description', 'date']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+        }
 
 class TransactionForm(forms.ModelForm):
     class Meta:
