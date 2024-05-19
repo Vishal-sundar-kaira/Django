@@ -29,4 +29,7 @@ class ExpenseCategoryForm(forms.ModelForm):
 class TransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
-        fields = ['category', 'amount', 'date', 'description']
+        fields = ['category', 'amount', 'description', 'date']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+        }

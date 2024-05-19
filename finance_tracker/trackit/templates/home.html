@@ -13,6 +13,8 @@
     <a href="{% url 'signup' %}">signup</a>
     <a href="{% url 'add_income' %}"> Add Income</a>
     <a href="{% url 'add_expense_category' %}">Add Expense Category</a>
-    <!-- <a href="{% url 'add_transaction' %}">Add Transaction</a> -->
+    
+    {% block content %}{% endblock %}
+    <!-- <p><a href="{% url 'transaction_list' %}">View Transactions</a></p> -->
 </body>
 </html>

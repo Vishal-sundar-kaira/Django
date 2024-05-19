@@ -1,0 +1,21 @@
+{% extends 'home.html' %}
+
+{% block content %}
+  <h2>Transactions</h2>
+  <a href="{% url 'transaction_add' %}">Add Transaction</a>
+  
+  {% if transactions %}
+    <ul>
+      {% for transaction in transactions %}
+        <li>
+          {{ transaction.date }} - {{ transaction.category }} - {{ transaction.amount }} - {{ transaction.description }}
+          <a href="{% url 'transaction_edit' transaction.pk %}">Edit</a>
+          <a href="{% url 'transaction_delete' transaction.pk %}">Delete</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No transactions available.</p>
+  {% endif %}
+  
+{% endblock %}
