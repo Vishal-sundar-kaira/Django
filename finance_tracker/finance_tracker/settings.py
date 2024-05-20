@@ -39,12 +39,15 @@ INSTALLED_APPS = [
     'trackit',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework.authtoken',
 ]
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication',  # Enable session authentication
-    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
 from datetime import timedelta
 
@@ -69,6 +72,8 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'finance_tracker.urls'
 LOGIN_REDIRECT_URL = 'trackit:home'
 LOGOUT_REDIRECT_URL = 'trackit:login'
+LOGIN_URL = '/login/'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

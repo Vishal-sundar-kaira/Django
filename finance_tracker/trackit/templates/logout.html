@@ -11,7 +11,8 @@
 
     <script>
         document.getElementById('logoutButton').addEventListener('click', async function() {
-            const accessToken = localStorage.getItem('access_token');
+            const accessToken = localStorage.getItem('token');
+            console.log(accessToken,"access")
             if (!accessToken) {
                 alert('You are not logged in');
                 return;
@@ -20,12 +21,13 @@
             const response = await fetch('/api/logout/', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${accessToken}`,
+                    'Authorization': `Token ${accessToken}`
                 },
             });
 
             if (response.ok) {
                 localStorage.removeItem('access_token');
+                localStorage.removeItem('token');
                 localStorage.removeItem('refresh_token');
                 alert('Logout successful');
                 window.location.href = '/login/';

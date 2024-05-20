@@ -12,24 +12,24 @@
         <a href="/transactions/">Cancel</a>
     </form>
     <script>
-        async function deleteTransaction(event) {
-            event.preventDefault();
-
-            const url = window.location.href;
-            const response = await fetch(url, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-                }
-            });
-
-            if (response.ok) {
-                alert('Transaction deleted successfully');
-                window.location.href = '/transactions/';
-            } else {
-                alert('Error deleting transaction');
-            }
+        async function deleteTransaction(id) {
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const response = await fetch(`/api/transactions/${id}/delete/`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Token ${localStorage.getItem('token')}`,
+            'X-CSRFToken': csrftoken
         }
+    });
+
+    if (response.ok) {
+        alert('Transaction deleted successfully');
+        loadTransactions();
+    } else {
+        alert('Error deleting transaction');
+    }
+}
+
     </script>
 </body>
 </html>

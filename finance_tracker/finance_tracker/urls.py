@@ -23,7 +23,6 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
      path('', include(('trackit.urls', 'trackit'), namespace='trackit')),  # Include trackit app URLs
-    path('accounts/', include('django.contrib.auth.urls')),  # Auth URLs
     path('api/', include('trackit.urls')),
     path('api-auth/', include('rest_framework.urls')),
 ]

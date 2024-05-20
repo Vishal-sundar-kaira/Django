@@ -6,7 +6,7 @@
         async function loadTransactions() {
             const response = await fetch('/api/transactions/', {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    'Authorization': `Token ${localStorage.getItem('token')}`
                 }
             });
             const transactions = await response.json();
@@ -19,8 +19,8 @@
                     const li = document.createElement('li');
                     li.innerHTML = `
                         ${transaction.date} - ${transaction.category} - ${transaction.amount} - ${transaction.description}
-                        <a href="/transaction/${transaction.id}/edit/">Edit</a>
-                        <a href="/transaction/${transaction.id}/delete/">Delete</a>
+                        <a href="/transaction/${transaction.id}/ed/">Edit</a>
+                        <a href="#" onclick="confirmDelete(${transaction.id})">Delete</a>
                     `;
                     transactionsList.appendChild(li);
                 });
@@ -29,12 +29,34 @@
             }
         }
 
+        function confirmDelete(id) {
+            if (confirm('Are you sure you want to delete this transaction?')) {
+                deleteTransaction(id);
+            }
+        }
+
+        async function deleteTransaction(id) {
+            const response = await fetch(`/api/transactions/${id}/delete/`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Token ${localStorage.getItem('token')}`
+                }
+            });
+
+            if (response.ok) {
+                alert('Transaction deleted successfully');
+                loadTransactions();
+            } else {
+                alert('Error deleting transaction');
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', loadTransactions);
     </script>
 </head>
 <body>
     <h2>Transactions</h2>
-    <a href="/transaction/add/">Add Transaction</a>
+    <a href="{% url 'add_transaction' %}">Add Transaction</a>
     <ul id="transactionsList"></ul>
 </body>
 </html>

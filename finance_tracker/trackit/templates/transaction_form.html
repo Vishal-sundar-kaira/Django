@@ -1,36 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Transaction</title>
-</head>
-<body>
-    <h2>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Transaction</h2>
-    <form method="post" onsubmit="handleSubmit(event)">
-        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-        <label for="category">Category:</label>
-        <input type="text" name="category" value="{{ form.instance.category }}" required><br>
-        <label for="amount">Amount:</label>
-        <input type="number" name="amount" value="{{ form.instance.amount }}" required><br>
-        <label for="description">Description:</label>
-        <textarea name="description">{{ form.instance.description }}</textarea><br>
-        <label for="date">Date:</label>
-        <input type="date" name="date" value="{{ form.instance.date }}" required><br>
-        <button type="submit">{% if form.instance.pk %}Update{% else %}Create{% endif %}</button>
-    </form>
+    <title>{% if form.instance.pk and not request.path|last == 'add' %}Edit{% else %}Add{% endif %} Transaction</title>
     <script>
         async function handleSubmit(event) {
             event.preventDefault();
             const formData = new FormData(event.target);
             const data = Object.fromEntries(formData.entries());
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-            const url = window.location.href.includes('edit') ? `/api/transaction/${data.id}/edit/` : '/api/transaction/add/';
-            const method = window.location.href.includes('edit') ? 'PUT' : 'POST';
+            const isEdit = window.location.href.includes('ed');
+            console.log(isEdit,"isedit")
+            const url = isEdit ? `/api/transactions/${data.id}/edit/` : '/api/transactions/add/';
+            const method = isEdit ? 'PUT' : 'POST';
 
             const response = await fetch(url, {
                 method: method,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    'Authorization': `Token ${localStorage.getItem('token')}`,
+                    'X-CSRFToken': csrftoken
                 },
                 body: JSON.stringify(data)
             });
@@ -43,5 +32,20 @@
             }
         }
     </script>
+</head>
+<body>
+    <h2>{% if form.instance.pk and not request.path|last == 'add' %}Edit{% else %}Add{% endif %} Transaction</h2>
+    <form method="post" onsubmit="handleSubmit(event)">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        <label for="category">Category:</label>
+        <input type="text" name="category" value="{{ form.instance.category }}" required><br>
+        <label for="amount">Amount:</label>
+        <input type="number" name="amount" value="{{ form.instance.amount }}" required><br>
+        <label for="description">Description:</label>
+        <textarea name="description">{{ form.instance.description }}</textarea><br>
+        <label for="date">Date:</label>
+        <input type="date" name="date" value="{{ form.instance.date }}" required><br>
+        <button type="submit">{% if form.instance.pk and not request.path|last == 'add' %}Update{% else %}Create{% endif %}</button>
+    </form>
 </body>
 </html>

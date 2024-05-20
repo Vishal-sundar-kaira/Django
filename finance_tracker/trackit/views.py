@@ -14,6 +14,11 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
 from django.shortcuts import render
 from django.contrib.auth import logout as auth_logout
+from rest_framework.authtoken.models import Token
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404
+from .models import Transaction
+
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 def dashboard_data(request):
@@ -58,25 +63,46 @@ def chart_data(request):
 def signup(request):
     return render(request, 'signup.html')
 
+@login_required
+def home(request):
+    return render(request, 'home.html')
+
 def dashboard(request):
     return render(request, 'dashboard.html')
 
 def login_view(request):
     return render(request, 'login.html')
 
+def add_income(request):
+    return render(request, 'add_income.html')
+
+def transaction(request):
+    return render(request, 'transaction_list.html')
+
 def logout_view(request):
     auth_logout(request)
     return render(request, 'logout.html')
 
+def add_transaction(request):
+    return render(request, 'add_transaction.html')
+
+def deleteit(request):
+    return render(request, 'transaction_confirm_delete.html')
+
+def editit(request, pk):
+    transaction = get_object_or_404(Transaction, pk=pk)
+    # You can add logic to handle GET and POST requests here if necessary
+    return render(request, 'transaction_form.html', {'transaction': transaction})
+
 class SignUpView(APIView):
-    print("in views")
     permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            user = serializer.save()
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
@@ -87,17 +113,23 @@ class LoginView(APIView):
         password = request.data.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            token, created = Token.objects.get_or_create(user=user)
             login(request, user)
-            return Response({"detail": "Login successful"}, status=200)
+            return Response({"token": token.key}, status=status.HTTP_200_OK)
         else:
-            return Response({"detail": "Invalid credentials"}, status=400)
+            return Response({"detail": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        logout(request)
-        return Response({"detail": "Logout successful"}, status=200)
+        try:
+            token = Token.objects.get(user=request.user)
+            token.delete()
+            logout(request)
+            return Response({"detail": "Logout successful"}, status=status.HTTP_200_OK)
+        except Token.DoesNotExist:
+            return Response({"detail": "Token not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class IncomeSourceCreateView(generics.CreateAPIView):
     serializer_class = IncomeSourceSerializer
@@ -121,6 +153,7 @@ class TransactionCreateView(generics.CreateAPIView):
         serializer.save(user=self.request.user)
 
 class TransactionListView(generics.ListAPIView):
+    print("here ok")
     serializer_class = TransactionSerializer
     permission_classes = [permissions.IsAuthenticated]
 

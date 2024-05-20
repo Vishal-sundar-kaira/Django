@@ -1,34 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Income</title>
-    <script>
-        async function addIncome(event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData.entries());
-            
-            const response = await fetch('/api/add_income/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-                },
-                body: JSON.stringify(data)
-            });
-
-            if (response.ok) {
-                alert('Income added successfully');
-                window.location.href = '/';
-            } else {
-                alert('Error adding income');
-            }
-        }
-    </script>
 </head>
 <body>
     <h2>Add Income</h2>
-    <form id="addIncomeForm" onsubmit="addIncome(event)">
+    <form id="addIncomeForm">
+        {% csrf_token %}
         <label for="name">Name:</label>
         <input type="text" name="name" required><br>
         <label for="amount">Amount:</label>
@@ -39,5 +19,34 @@
         <input type="date" name="date" required><br>
         <button type="submit">Save</button>
     </form>
+
+    <script>
+        document.getElementById('addIncomeForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const token = localStorage.getItem('token');
+            console.log(token,"getting token")
+            const response = await fetch('/api/add_income/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,  // Include CSRF token in headers
+                    'Authorization': `Token ${token}`
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert('Income added successfully');
+                window.location.href = '/';
+            } else {
+                const errorMessage = await response.json();
+                alert('Error adding income: ' + JSON.stringify(errorMessage));
+            }
+        });
+    </script>
 </body>
 </html>

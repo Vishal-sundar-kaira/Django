@@ -26,7 +26,7 @@
 
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-            const response = await fetch('/signup/', {
+            const response = await fetch('/api/signup/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

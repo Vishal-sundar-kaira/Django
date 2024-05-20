@@ -21,7 +21,7 @@
             const formData = new FormData(event.target);
             const data = Object.fromEntries(formData.entries());
 
-            const response = await fetch('/api/token/', {
+            const response = await fetch('/api/login/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -30,9 +30,8 @@
             });
 
             if (response.ok) {
-                const tokenData = await response.json();
-                localStorage.setItem('access_token', tokenData.access);
-                localStorage.setItem('refresh_token', tokenData.refresh);
+                const responseData = await response.json();
+                localStorage.setItem('token', responseData.token);
                 alert('Login successful');
                 window.location.href = '/';
             } else {
