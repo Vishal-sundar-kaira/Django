@@ -2,27 +2,29 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import IncomeSource, ExpenseCategory, Transaction
 from django.contrib.auth.password_validation import validate_password
-
+from rest_framework.validators import UniqueValidator
 class UserSerializer(serializers.ModelSerializer):
-    password1 = serializers.CharField(write_only=True)
-    password2 = serializers.CharField(write_only=True)
-
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password1', 'password2']
-
-    def validate(self, data):
-        if data['password1'] != data['password2']:
-            raise serializers.ValidationError("Passwords do not match")
-        return data
+    print("in serializer")
+    email = serializers.EmailField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
+    username = serializers.CharField(
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
+    password = serializers.CharField(min_length=8, write_only=True)
 
     def create(self, validated_data):
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
-            password=validated_data['password1']
+            password=validated_data['password']
         )
         return user
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'password']
 
 class IncomeSourceSerializer(serializers.ModelSerializer):
     class Meta:
