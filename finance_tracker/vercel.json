@@ -21,7 +21,7 @@
       },
       {
         "src": "/(.*)",
-        "dest": "finanace_tracker/wsgi.py"
+        "dest": "finance_tracker/wsgi.py"
       }
     ]
   }
