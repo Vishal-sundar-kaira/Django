@@ -15,14 +15,18 @@ urlpatterns = [
     path('chart-data/', views.chart_data, name='chart_data'),
     path('api/signup/', views.SignUpView.as_view(), name='api_signup'),  # API endpoint for signup
     path('add_income/', views.add_income, name='add_income'),
+    path('add_expense/', views.add_expense, name='add_expense'),
     path('api/add_income/', views.IncomeSourceCreateView.as_view(), name='api_add_income'),
-    path('add_expense_category/', views.ExpenseCategoryCreateView.as_view(), name='add_expense_category'),
+    path('api/add_expense_category/', views.ExpenseCategoryCreateView.as_view(), name='add_expense_category'),
     path('api/transactions/', views.TransactionListView.as_view(), name='transaction_lists'),
     
     path('transaction/add/', views.TransactionCreateView.as_view(), name='transaction_add'),
-    path('transaction/<int:pk>/edit/', views.TransactionUpdateView.as_view(), name='transaction_edit'),
-    path('transaction/<int:pk>/ed/', views.editit, name='transaction_edit_it'),
-    path('transaction_confirm',views.deleteit,name='transaction_confirm_delete'),
+    # path('transaction/<int:pk>/edit/', views.TransactionUpdateView.as_view(), name='transaction_edit'),
+     path('api/transactions/<int:pk>/', views.TransactionUpdateView.as_view(), name='transaction_detail'),
+    path('api/transactions_add/', views.TransactionListCreateView.as_view(), name='transaction_list_create'),
+    path('transaction_form/', views.transaction_edit, name='transaction_form'),
+    # path('transaction/<int:pk>/ed/', views.editit, name='transaction_edit_it'),
+     path('transaction_delete/<int:pk>/', views.transaction_delete, name='transaction_delete'),
 
     path('transactions/<int:pk>/delete/', views.TransactionDeleteView.as_view(), name='transaction_delete'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

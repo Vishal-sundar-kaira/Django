@@ -2,34 +2,36 @@
 <html>
 <head>
     <title>Delete Transaction</title>
+    <script>
+        async function deleteTransaction(event) {
+            event.preventDefault();
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const transactionId = document.querySelector('input[name="transaction_id"]').value;
+            const response = await fetch(`/api/transactions/${transactionId}/delete`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Token ${localStorage.getItem('token')}`,
+                    'X-CSRFToken': csrftoken
+                }
+            });
+
+            if (response.ok) {
+                alert('Transaction deleted successfully');
+                window.location.href = '/transactions/';
+            } else {
+                alert('Error deleting transaction');
+            }
+        }
+    </script>
 </head>
 <body>
     <h2>Delete Transaction</h2>
     <p>Are you sure you want to delete this transaction?</p>
     <form method="post" onsubmit="deleteTransaction(event)">
         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        <input type="hidden" name="transaction_id" value="{{ pk }}">
         <button type="submit">Confirm</button>
         <a href="/transactions/">Cancel</a>
     </form>
-    <script>
-        async function deleteTransaction(id) {
-    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    const response = await fetch(`/api/transactions/${id}/delete/`, {
-        method: 'DELETE',
-        headers: {
-            'Authorization': `Token ${localStorage.getItem('token')}`,
-            'X-CSRFToken': csrftoken
-        }
-    });
-
-    if (response.ok) {
-        alert('Transaction deleted successfully');
-        loadTransactions();
-    } else {
-        alert('Error deleting transaction');
-    }
-}
-
-    </script>
 </body>
 </html>

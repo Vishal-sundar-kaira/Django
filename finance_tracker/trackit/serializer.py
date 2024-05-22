@@ -29,12 +29,12 @@ class UserSerializer(serializers.ModelSerializer):
 class IncomeSourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = IncomeSource
-        fields = ['id', 'name', 'amount', 'description', 'date']
+        fields = ['id', 'amount', 'description', 'date']
 
 class ExpenseCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ExpenseCategory
-        fields = ['id', 'name', 'amount', 'description', 'date']
+        fields = ['id', 'amount', 'description', 'date']
 
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:

@@ -19,8 +19,8 @@
                     const li = document.createElement('li');
                     li.innerHTML = `
                         ${transaction.date} - ${transaction.category} - ${transaction.amount} - ${transaction.description}
-                        <a href="/transaction/${transaction.id}/ed/">Edit</a>
-                        <a href="#" onclick="confirmDelete(${transaction.id})">Delete</a>
+                        <a href="/transaction_form/?id=${transaction.id}">Edit</a>
+                        <a href="/transaction_delete/${transaction.id}">Delete</a>
                     `;
                     transactionsList.appendChild(li);
                 });
@@ -36,7 +36,7 @@
         }
 
         async function deleteTransaction(id) {
-            const response = await fetch(`/api/transactions/${id}/delete/`, {
+            const response = await fetch(`/api/transactions/${id}/`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Token ${localStorage.getItem('token')}`
@@ -56,7 +56,7 @@
 </head>
 <body>
     <h2>Transactions</h2>
-    <a href="{% url 'add_transaction' %}">Add Transaction</a>
+    <a href="/transaction_form/">Add Transaction</a>
     <ul id="transactionsList"></ul>
 </body>
 </html>

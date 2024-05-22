@@ -76,6 +76,9 @@ def login_view(request):
 def add_income(request):
     return render(request, 'add_income.html')
 
+def add_expense(request):
+    return render(request, 'add_expense_category.html')
+
 def transaction(request):
     return render(request, 'transaction_list.html')
 
@@ -86,13 +89,9 @@ def logout_view(request):
 def add_transaction(request):
     return render(request, 'add_transaction.html')
 
-def deleteit(request):
-    return render(request, 'transaction_confirm_delete.html')
+def transaction_delete(request, pk):
+    return render(request, 'transaction_confirm_delete.html', {'pk': pk})
 
-def editit(request, pk):
-    transaction = get_object_or_404(Transaction, pk=pk)
-    # You can add logic to handle GET and POST requests here if necessary
-    return render(request, 'transaction_form.html', {'transaction': transaction})
 
 class SignUpView(APIView):
     permission_classes = [AllowAny]
@@ -144,7 +143,8 @@ class ExpenseCategoryCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
+def transaction_edit(request):
+    return render(request, 'transaction_form.html')
 class TransactionCreateView(generics.CreateAPIView):
     serializer_class = TransactionSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -160,12 +160,23 @@ class TransactionListView(generics.ListAPIView):
     def get_queryset(self):
         return Transaction.objects.filter(user=self.request.user)
 
-class TransactionUpdateView(generics.UpdateAPIView):
+class TransactionUpdateView(generics.RetrieveUpdateAPIView):
+    serializer_class = TransactionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'pk'
+
+    def get_queryset(self):
+        return Transaction.objects.filter(user=self.request.user)
+
+class TransactionListCreateView(generics.ListCreateAPIView):
     serializer_class = TransactionSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return Transaction.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 class TransactionDeleteView(generics.DestroyAPIView):
     serializer_class = TransactionSerializer
