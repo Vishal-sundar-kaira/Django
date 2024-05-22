@@ -1,15 +1,9 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "finance_tracker/serverless.py",
-        "use": "@vercel/python"
-      }
-    ],
     "routes": [
       {
-        "src": "/(.*)",
-        "dest": "/"
+        "rewrites":[
+            {"source":"/(.*)","destination":"/"}
+        ]
       }
     ]
   }
