@@ -23,7 +23,7 @@ from .models import Transaction
 @permission_classes([permissions.IsAuthenticated])
 def dashboard_data(request):
     print("here came")
-    user =User
+    user =request.user
     total_income = IncomeSource.objects.filter(user=user).aggregate(total=Sum('amount'))['total'] or 0
     total_expenses = ExpenseCategory.objects.filter(user=user).aggregate(total=Sum('amount'))['total'] or 0
     savings = total_income - total_expenses

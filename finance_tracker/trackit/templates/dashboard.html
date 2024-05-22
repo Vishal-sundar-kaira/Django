@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         async function fetchDashboardData() {
             const response = await fetch('/api/dashboard_data/', {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    'Authorization': `Token ${localStorage.getItem('token')}`
                 }
             });
             if (response.ok) {
@@ -17,9 +18,36 @@
                 document.querySelector('.income-value').textContent = `RS ${data.total_income}`;
                 document.querySelector('.spent-value').textContent = `RS ${data.total_expenses}`;
                 document.querySelector('.card-balance').textContent = `RS ${data.savings}`;
+
+                // Call function to render the chart with fetched data
+                renderChart(data);
             } else {
                 console.error('Failed to fetch dashboard data');
             }
+        }
+
+        function renderChart(data) {
+            const ctx = document.getElementById('myChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Income', 'Expenses', 'Savings'],
+                    datasets: [{
+                        label: 'Amount (RS)',
+                        data: [data.total_income, data.total_expenses, data.savings],
+                        backgroundColor: ['#4caf50', '#f44336', '#2196f3'],
+                        borderColor: ['#388e3c', '#d32f2f', '#1976d2'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
         }
 
         document.addEventListener('DOMContentLoaded', fetchDashboardData);
@@ -67,7 +95,7 @@
                 </div>
                 <div class="income-vs-spent">
                     <h3>Compare Net Income and Spent</h3>
-                    <div class="chart"></div>
+                    <canvas id="myChart"></canvas>
                 </div>
                 <div class="goals">
                     <h3>Goals</h3>

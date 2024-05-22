@@ -16,10 +16,11 @@ urlpatterns = [
     path('api/signup/', views.SignUpView.as_view(), name='api_signup'),  # API endpoint for signup
     path('add_income/', views.add_income, name='add_income'),
     path('add_expense/', views.add_expense, name='add_expense'),
+
+
     path('api/add_income/', views.IncomeSourceCreateView.as_view(), name='api_add_income'),
     path('api/add_expense_category/', views.ExpenseCategoryCreateView.as_view(), name='add_expense_category'),
     path('api/transactions/', views.TransactionListView.as_view(), name='transaction_lists'),
-    
     path('transaction/add/', views.TransactionCreateView.as_view(), name='transaction_add'),
     # path('transaction/<int:pk>/edit/', views.TransactionUpdateView.as_view(), name='transaction_edit'),
      path('api/transactions/<int:pk>/', views.TransactionUpdateView.as_view(), name='transaction_detail'),

@@ -62,7 +62,10 @@
     <form method="post" onsubmit="handleSubmit(event)">
         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
         <label for="category">Category:</label>
-        <input type="text" name="category" required><br>
+        <select name="category" required>
+            <option value="Expenses">Expenses</option>
+            <option value="Income">Income</option>
+        </select><br>
         <label for="amount">Amount:</label>
         <input type="number" name="amount" required><br>
         <label for="description">Description:</label>
