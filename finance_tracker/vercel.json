@@ -9,7 +9,7 @@
     "routes": [
       {
         "src": "/(.*)",
-        "dest": "finance_tracker/serverless.py"
+        "dest": "/"
       }
     ]
   }
