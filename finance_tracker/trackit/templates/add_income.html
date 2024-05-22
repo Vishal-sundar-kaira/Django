@@ -4,11 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Income</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff; /* Light blue background */
+            color: #333; /* Dark text color */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        form {
+            background-color: #fff; /* White form background */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="number"],
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button[type="submit"] {
+            background-color: #007bff; /* Blue submit button */
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+    </style>
 </head>
 <body>
-    <h2>Add Income</h2>
     <form id="addIncomeForm">
         {% csrf_token %}
+        <h2>Add Income</h2>
         <label for="amount">Amount:</label>
         <input type="number" name="amount" required><br>
         <label for="description">Description:</label>
@@ -19,32 +70,7 @@
     </form>
 
     <script>
-        document.getElementById('addIncomeForm').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData.entries());
-
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-            const token = localStorage.getItem('token');
-            console.log(token,"getting token")
-            const response = await fetch('/api/add_income/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken,  // Include CSRF token in headers
-                    'Authorization': `Token ${token}`
-                },
-                body: JSON.stringify(data)
-            });
-
-            if (response.ok) {
-                alert('Income added successfully');
-                window.location.href = '/';
-            } else {
-                const errorMessage = await response.json();
-                alert('Error adding income: ' + JSON.stringify(errorMessage));
-            }
-        });
+        // JavaScript code here...
     </script>
 </body>
 </html>

@@ -21,6 +21,15 @@ class ExpenseCategory(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.amount}"
+    
+class Goal(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    description = models.TextField()
+    achieved = models.BooleanField(default=False)
+    date_created = models.DateField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.description} - {'Achieved' if self.achieved else 'Pending'}"
 
 class Transaction(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -55,3 +64,4 @@ def create_transaction_from_expense(sender, instance, created, **kwargs):
             description=instance.description,
             date=instance.date
         )
+

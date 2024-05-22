@@ -2,8 +2,8 @@ from rest_framework import generics, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializer import IncomeSourceSerializer, ExpenseCategorySerializer, TransactionSerializer,UserSerializer
-from .models import IncomeSource, ExpenseCategory, Transaction
+from .serializer import IncomeSourceSerializer, ExpenseCategorySerializer, TransactionSerializer,UserSerializer,GoalSerializer
+from .models import IncomeSource, ExpenseCategory, Transaction, Goal
 from django.db.models import Sum
 from django.utils import timezone
 from datetime import timedelta
@@ -16,6 +16,7 @@ from django.shortcuts import render
 from django.contrib.auth import logout as auth_logout
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.decorators import login_required
+from rest_framework import viewsets, permissions
 from django.shortcuts import render, get_object_or_404
 from .models import Transaction
 
@@ -136,6 +137,24 @@ class IncomeSourceCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+class GoalListCreateView(generics.ListCreateAPIView):
+    serializer_class = GoalSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Goal.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class GoalRetrieveUpdateView(generics.RetrieveUpdateAPIView):
+    serializer_class = GoalSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Goal.objects.filter(user=self.request.user)
+
 
 class ExpenseCategoryCreateView(generics.CreateAPIView):
     serializer_class = ExpenseCategorySerializer

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import IncomeSource, ExpenseCategory, Transaction
+from .models import IncomeSource, ExpenseCategory, Transaction,Goal
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.validators import UniqueValidator
 class UserSerializer(serializers.ModelSerializer):
@@ -40,3 +40,8 @@ class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = ['id', 'category', 'amount', 'description', 'date']
+
+class GoalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Goal
+        fields = '__all__'

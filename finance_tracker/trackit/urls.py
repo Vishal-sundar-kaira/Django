@@ -2,7 +2,7 @@ from django.urls import path, include
 from . import views
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.views.generic import TemplateView
-
+from rest_framework.routers import DefaultRouter
 urlpatterns = [
     path('', views.home, name='home'),
     path('signup/', views.signup, name='signup'),  # Render signup.html
@@ -11,13 +11,15 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard_data'),
     path('transactions/', views.transaction, name='transaction_list'),
      path('dashboard_data/', views.dashboard_data, name='dashboard_data'),
+     path('dashboard/', views.dashboard, name='dashboard'),
      path('add_transaction/', views.add_transaction, name='add_transaction'),
     path('chart-data/', views.chart_data, name='chart_data'),
     path('api/signup/', views.SignUpView.as_view(), name='api_signup'),  # API endpoint for signup
     path('add_income/', views.add_income, name='add_income'),
     path('add_expense/', views.add_expense, name='add_expense'),
-
-
+    
+     path('api/goals/', views.GoalListCreateView.as_view(), name='goal_list_create'),
+    path('api/goals/<int:pk>/', views.GoalRetrieveUpdateView.as_view(), name='goal_detail_update'),
     path('api/add_income/', views.IncomeSourceCreateView.as_view(), name='api_add_income'),
     path('api/add_expense_category/', views.ExpenseCategoryCreateView.as_view(), name='add_expense_category'),
     path('api/transactions/', views.TransactionListView.as_view(), name='transaction_lists'),

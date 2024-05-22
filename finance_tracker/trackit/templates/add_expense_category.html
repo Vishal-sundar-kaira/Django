@@ -1,7 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Expense Category</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff; /* Light blue background */
+            color: #333; /* Dark text color */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        form {
+            background-color: #fff; /* White form background */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="number"],
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button[type="submit"] {
+            background-color: #007bff; /* Blue submit button */
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+    </style>
+</head>
+<body>
+    <form id="addExpenseCategoryForm" onsubmit="addExpenseCategory(event)">
+        <h2>Add Expense Category</h2>
+        <label for="amount">Amount:</label>
+        <input type="number" name="amount" required><br>
+        <label for="description">Description:</label>
+        <textarea name="description"></textarea><br>
+        <label for="date">Date:</label>
+        <input type="date" name="date" required><br>
+        <button type="submit">Save</button>
+    </form>
+
     <script>
         async function addExpenseCategory(event) {
             event.preventDefault();
@@ -25,17 +91,5 @@
             }
         }
     </script>
-</head>
-<body>
-    <h2>Add Expense Category</h2>
-    <form id="addExpenseCategoryForm" onsubmit="addExpenseCategory(event)">
-        <label for="amount">Amount:</label>
-        <input type="number" name="amount" required><br>
-        <label for="description">Description:</label>
-        <textarea name="description"></textarea><br>
-        <label for="date">Date:</label>
-        <input type="date" name="date" required><br>
-        <button type="submit">Save</button>
-    </form>
 </body>
 </html>
