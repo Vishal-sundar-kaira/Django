@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-n2z-nk0_awlvi&_snjjwjzkvm9s^@$f#8e7hnmcen^&rxv0$gk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -150,3 +150,16 @@ STATIC_ROOT=os.path.join(BASE_DIR,'staticfiles_build','static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
